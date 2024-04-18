@@ -103,7 +103,22 @@ const mutation = new GraphQLObjectType({
         id: { type: GraphQLNonNull(GraphQLID) },
       },
       resolve(parent, args) {
-        return Client.findByIdAndDelete(args.id);
+        Project.deleteMany({ clientId: args.id })
+          .then(() => {
+            return Client.findByIdAndDelete(args.id);
+          })
+          .then((deletedClient) => {
+            console.log(
+              "Client and associated projects deleted successfully:",
+              deletedClient
+            );
+          })
+          .catch((error) => {
+            console.error(
+              "Error deleting client and associated projects:",
+              error
+            );
+          });
       },
     },
 
